@@ -1,8 +1,12 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Constants from "expo-constants";
+
+const debuggerHost = Constants.expoConfig?.hostUri || Constants.manifest?.debuggerHost;
+const localhost = debuggerHost?.split(":")[0];
 
 const api = axios.create({
-  baseURL: "http://localhost:3000", // coloque o IP da sua máquina se testar no iPhone
+  baseURL: `http://${localhost}:4000`,
 });
 
 api.interceptors.request.use(async (config) => {
