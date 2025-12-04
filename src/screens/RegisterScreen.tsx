@@ -1,97 +1,49 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet
-} from "react-native";
+import { View, TextInput, Text, TouchableOpacity, StyleSheet } from "react-native";
+import api from "../services/api";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../navigation/AppNavigator";
+import { RegisterResponse } from "../types/ApiResponse";
 
-type Props = NativeStackScreenProps<RootStackParamList, "Register">;
+type Props = NativeStackScreenProps<any, "Register">;
 
 export default function RegisterScreen({ navigation }: Props) {
-  const [nome, setNome] = useState("");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleRegister = async () => {
+    try {
+      await api.post<RegisterResponse>("/auth/register", {
+        name,
+        email,
+        password,
+      });
+
+      navigation.navigate("Login");
+    } catch (error) {
+      console.log("Erro ao registrar:", error);
+    }
+  };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Criar Conta</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Nome"
-        placeholderTextColor="#999"
-        value={nome}
-        onChangeText={setNome}
-      />
+      <TextInput placeholder="Nome" style={styles.input} value={name} onChangeText={setName} />
+      <TextInput placeholder="Email" style={styles.input} value={email} onChangeText={setEmail} />
+      <TextInput placeholder="Senha" secureTextEntry style={styles.input} value={password} onChangeText={setPassword} />
 
-      <TextInput
-        style={styles.input}
-        placeholder="E-mail"
-        placeholderTextColor="#999"
-        value={email}
-        onChangeText={setEmail}
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Senha"
-        placeholderTextColor="#999"
-        secureTextEntry
-        value={senha}
-        onChangeText={setSenha}
-      />
-
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Cadastrar</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-        <Text style={styles.link}>Já tenho conta</Text>
+      <TouchableOpacity onPress={handleRegister} style={styles.button}>
+        <Text style={styles.buttonText}>Registrar</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FFF",
-    padding: 25,
-    justifyContent: "center"
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "700",
-    marginBottom: 30,
-    textAlign: "center"
-  },
-  input: {
-    backgroundColor: "#EFEFEF",
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 15
-  },
-  button: {
-    backgroundColor: "#C58B47",
-    padding: 15,
-    borderRadius: 10,
-    marginTop: 5
-  },
-  buttonText: {
-    color: "#FFF",
-    fontSize: 18,
-    fontWeight: "600",
-    textAlign: "center"
-  },
-  link: {
-    textAlign: "center",
-    marginTop: 15,
-    color: "#C58B47",
-    fontSize: 16,
-    fontWeight: "600"
-  }
+  container: { flex: 1, justifyContent: "center", padding: 20, backgroundColor: "#C69C6D" },
+  title: { fontSize: 28, fontWeight: "bold", color: "#fff", marginBottom: 20 },
+  input: { backgroundColor: "#fff", padding: 12, borderRadius: 8, marginBottom: 12 },
+  button: { backgroundColor: "#8B5E3C", padding: 15, borderRadius: 8, alignItems: "center" },
+  buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold" }
 });
